@@ -15,17 +15,14 @@ export default function App() {
   React.useEffect(() => {
     void (async () => {
       try {
-          const db = await openDatabaseAsync('store')
-          await db.execAsync('PRAGMA journal_mode = WAL')
-          await db.execAsync('CREATE TABLE IF NOT EXISTS fields (value NOT NULL)')
-          await db.execAsync('DELETE FROM fields')
-          await db.runAsync('INSERT INTO fields(value) VALUES ($value)', { $value: Uint8Array.from([]) })
-
-          log('Trying without selecting the value')
-          log(JSON.stringify(await db.getAllAsync('SELECT NULL FROM fields')))
-
-          log('Trying with selecting the value')
-          log(JSON.stringify(await db.getAllAsync('SELECT value FROM fields')))
+          log('Opening first...')
+          const db1 = await openDatabaseAsync('store')
+          log('Opening second...')
+          const db2 = await openDatabaseAsync('store')
+          log('Closing first...')
+          await db1.closeAsync()
+          log('Closing second...')
+          await db2.closeAsync()
       } catch (e) {
         log(JSON.stringify(e))
       }
